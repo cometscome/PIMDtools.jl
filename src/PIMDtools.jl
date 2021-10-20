@@ -56,7 +56,8 @@ module PIMDtools
 
     function Trajectory(filename,itrj_start,itrj_end,atominfo;
                             periodic=true,
-                            unitcell=nothing
+                            unitcell=nothing,
+                            ronly=true
                         )
 
         numkinds = length(atominfo)
@@ -117,7 +118,7 @@ module PIMDtools
                 for i=2:11
                     df[i-1] = parse(Float64,u[i]) 
                 end
-                atoms[iatom] = Atom(df[1:10])
+                atoms[iatom] = Atom(df[1:10],ronly=ronly)
             end
             data[count] = deepcopy(Snapshot(atoms))
         end
