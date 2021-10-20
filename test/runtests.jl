@@ -16,7 +16,7 @@ function test1()
 
     dirname = "./"
     period = 10
-    start_itrj = 1
+    start_itrj = itrj_start 
     maxsteps = 10
     calc_MSD(trj,dirname,positions,period,start_itrj,maxsteps)
 end

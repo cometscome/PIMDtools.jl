@@ -32,6 +32,7 @@ module PIMDtools
         unitcell::Union{Nothing,Array{Array{Float64,1},1}}
         rotatematrix::Union{Nothing,Array{Float64,2}}
         rotatematrix_inv::Union{Nothing,Array{Float64,2}}
+        itrj_start::Int64
     end
 
     Base.length(trj::Trajectory) = trj.numtrj
@@ -116,7 +117,8 @@ module PIMDtools
             periodic,
             unitcell,
             rotatematrix,
-            rotatematrix_inv
+            rotatematrix_inv,
+            itrj_start
         )
         #=
             data::Array{Snapshot,1}
@@ -128,6 +130,7 @@ module PIMDtools
             unitcell::Union{Nothing,Array{Array{Float64,1},1}}
             rotatematrix::Union{Nothing,Array{Float64,2}}
             rotatematrix_inv::Union{Nothing,Array{Float64,2}}
+            itrj_start::Int64
         =#
     end
 
@@ -232,7 +235,9 @@ module PIMDtools
         drj = zeros(3)
         dphi = 0
         count = 0
-        for itrj=start_itrj:period:length(trj)
+        istart = start_itrj - trj.itrj_start + 1
+        @assert istart > 0 "no data available!"
+        for itrj=istart:period:length(trj)
             count += 1
             for iatom=1:trj.numatoms
                 for i=1:3
