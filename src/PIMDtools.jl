@@ -258,8 +258,8 @@ module PIMDtools
                 end
 
             end
-            fp = open(dirname*"/atomic_MSD_from$(start_itrj).txt","w")
-            fp2 = open(dirname*"/MSD_from$(start_itrj).txt","w")
+            fp = open(dirname*"/atomic_MSD_from$(start_itrj)-th.txt","w")
+            fp2 = open(dirname*"/MSD_from$(start_itrj)-th.txt","w")
 
 
             for it = 1:maxsteps
