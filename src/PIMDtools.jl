@@ -3,10 +3,7 @@ module PIMDtools
     export Trajectory,a0,get_relative_positions,calc_MSD
     const a0 = 0.5291772 #Bohr length [Angstrom]
 
-    struct Atom
-        x::Float64 #[a.u.]
-        y::Float64
-        z::Float64
+    struct Atom_vFE
         vx::Float64
         vy::Float64
         vz::Float64
@@ -14,7 +11,24 @@ module PIMDtools
         Fy::Float64
         Fz::Float64
         E::Float64
-        Atom(A) = new(A[1],A[2],A[3],A[4],A[5],A[6],A[7],A[8],A[9],A[10])
+    end
+
+    struct Atom
+        x::Float64 #[a.u.]
+        y::Float64
+        z::Float64
+        vFE::Union{Nothing,Atom_vFE}
+
+        Atom(A) = Atom(A,ronly=true)
+        
+        function Atom(A;ronly=true)
+            if ronly
+                return new(A[1],A[2],A[3],nothing)
+            else
+                return new(A[1],A[2],A[3],Atom_vFE(A[4],A[5],A[6],A[7],A[8],A[9],A[10]))
+            end
+        end
+        #Atom(A) = new(A[1],A[2],A[3],A[4],A[5],A[6],A[7],A[8],A[9],A[10])
     end
 
     struct Snapshot
