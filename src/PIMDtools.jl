@@ -614,6 +614,7 @@ module PIMDtools
         seekposition = 0
         count = 0
         seekposition += nbytes_Int64
+        println(istart)
         for i=istart:itrj-1
             count += 1
             seekposition += 2*nbytes_Int64
