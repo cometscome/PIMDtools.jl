@@ -614,7 +614,7 @@ module PIMDtools
         seekposition = 0
         count = 0
         seekposition += nbytes_Int64
-        for itrj=istart:itrj-1
+        for i=istart:itrj-1
             count += 1
             seekposition += 2*nbytes_Int64
             for iatom=1:trjfile.numatoms_list[count]
