@@ -1,6 +1,7 @@
 module PIMDtools
     using LinearAlgebra
-    export Trajectory,a0,get_relative_positions,calc_MSD
+    using HDF5
+    export Trajectory,a0,get_relative_positions,calc_MSD,toHDF5_r
     const a0 = 0.5291772 #Bohr length [Angstrom]
 
     struct Atom_vFE
@@ -122,6 +123,7 @@ module PIMDtools
             end
             data[count] = deepcopy(Snapshot(atoms))
         end
+        close(fp)
 
         return Trajectory(
             data,
@@ -147,6 +149,68 @@ module PIMDtools
             rotatematrix_inv::Union{Nothing,Array{Float64,2}}
             itrj_start::Int64
         =#
+    end
+
+    function toHDF5_r(filename,dirname,itrj_start,itrj_end,num_of_structures,atominfo)
+        numkinds = length(atominfo)
+        print("System: ")
+        atomnames = String[]
+        numeachatom = Int64[]
+        df = zeros(Float64,10)
+        numtrj = itrj_end-itrj_start+1
+        for (kind,num) in atominfo
+            print("$(kind)$(num)")
+            push!(atomnames,kind)
+            push!(numeachatom,num)
+        end
+        println("\t")
+
+        numatoms = sum(numeachatom)
+        println("number of total atoms: ",numatoms)
+        println("number of total data: ",numtrj)
+
+        fp = open(filename,"r")
+        for itrj=1:itrj_start-1
+            for iatom=1:numatoms
+                readline(fp)
+            end
+        end
+
+        count = 0
+        setcount = itrj_start
+        countstruct = 0
+        setstart = setcount
+        setend  =setcount +num_of_structures - 1
+        ifp1 = h5open(dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.h5", "w")
+        #ifp1 = open(dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.dat","w")
+        for itrj=itrj_start:itrj_end
+            count += 1
+            countstruct += 1
+            for iatom=1:numatoms
+                u = split(readline(fp))
+                di = parse(Int64,u[1]) 
+                for i=2:11
+                    df[i-1] = parse(Float64,u[i]) 
+                end
+                #atoms[iatom] = Atom(df[1:10],ronly=ronly)
+                write(ifp1,"$(lpad(itrj,8,"0"))/$(lpad(iatom,4,"0"))/r",Float64[df[1],df[2],df[3]])
+            end
+            setcount += 1
+            if countstruct == num_of_structures
+                close(ifp1)                
+                setstart = setcount
+                if setstart <= itrj_end
+                    setend  =setcount +num_of_structures - 1
+                    if setend > itrj_end
+                        setend =itrj_end
+                    end
+                    ifp1 = h5open(dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.h5", "w")
+                    countstruct = 0
+                end
+            end
+        end
+        close(fp)
+
     end
 
     function get_relative_positions(trj::Trajectory)
