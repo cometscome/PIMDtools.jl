@@ -181,12 +181,14 @@ module PIMDtools
         countstruct = 0
         setstart = setcount
         setend  =setcount +num_of_structures - 1
-        dataname = dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.h5"
-        ifp1 = h5open(dataname, "w")
+        dataname = dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.dat"
+        #ifp1 = h5open(dataname, "w")
+        ifp1 = open(dataname, "w")
         #ifp1 = open(dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.dat","w")
         for itrj=itrj_start:itrj_end
             count += 1
             countstruct += 1
+            write(ifp1,itrj)
             for iatom=1:numatoms
                 u = split(readline(fp))
                 di = parse(Int64,u[1]) 
@@ -194,7 +196,10 @@ module PIMDtools
                     df[i-1] = parse(Float64,u[i]) 
                 end
                 #atoms[iatom] = Atom(df[1:10],ronly=ronly)
-                write(ifp1,"$(lpad(itrj,8,"0"))/$(lpad(iatom,4,"0"))/r",Float64[df[1],df[2],df[3]])
+                write(ifp1,df[1])
+                write(ifp1,df[2])
+                write(ifp1,df[3])
+                #write(ifp1,"$(lpad(itrj,8,"0"))/$(lpad(iatom,4,"0"))/r",Float64[df[1],df[2],df[3]])
             end
             setcount += 1
             if countstruct == num_of_structures
@@ -206,8 +211,9 @@ module PIMDtools
                     if setend > itrj_end
                         setend =itrj_end
                     end
-                    dataname = dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.h5"
-                    ifp1 = h5open(dataname, "w")
+                    dataname = dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.dat"
+                    #ifp1 = h5open(dataname, "w")
+                    ifp1 = open(dataname, "w")
                     countstruct = 0
                 end
             end
