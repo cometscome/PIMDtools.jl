@@ -181,7 +181,8 @@ module PIMDtools
         countstruct = 0
         setstart = setcount
         setend  =setcount +num_of_structures - 1
-        ifp1 = h5open(dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.h5", "w")
+        dataname = dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.h5"
+        ifp1 = h5open(dataname, "w")
         #ifp1 = open(dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.dat","w")
         for itrj=itrj_start:itrj_end
             count += 1
@@ -197,6 +198,7 @@ module PIMDtools
             end
             setcount += 1
             if countstruct == num_of_structures
+                println("$dataname is done")
                 close(ifp1)                
                 setstart = setcount
                 if setstart <= itrj_end
@@ -204,7 +206,8 @@ module PIMDtools
                     if setend > itrj_end
                         setend =itrj_end
                     end
-                    ifp1 = h5open(dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.h5", "w")
+                    dataname = dirname*"/$(lpad(setstart,8,"0"))_$(lpad(setend,8,"0"))_trjset_r.h5"
+                    ifp1 = h5open(dataname, "w")
                     countstruct = 0
                 end
             end
